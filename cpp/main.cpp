@@ -49,7 +49,8 @@ include("js_base64.js");
 
 
 #ifndef JAVASCRIPT 
-#define __QUERY__ "?aaa=000"
+//#define __QUERY__ "?aaa=000"
+#define __QUERY__ null
 #endif
 //
 // Debufg print
@@ -112,6 +113,8 @@ void strlength(const char* a)
 // QUERY
 //
 
+var f_set_query = 0;
+
 #ifdef JAVASCRIPT
 getQuery = function()
 #else
@@ -120,13 +123,17 @@ var getQuery()
 {
 	var ret;
 	ret= "";
+#ifdef JAVASCRIPT
+	if (location.search){
+		ret = location.search;
+		return ret;
+	}
+#endif
 	if (typeof(sessionStorage) != "undefined"){
 		ret = sessionStorage.getItem("__QUERY__");
 		if (ret!=null)return ret;
 	}
-#ifdef JAVASCRIPT
-	if(location.search)ret=location.search;
-#else
+#ifndef JAVASCRIPT
 #ifdef __QUERY__
 	ret = __QUERY__;
 #endif
@@ -141,13 +148,32 @@ void setQuery(var src)
 #endif
 {
 	if (src == null || src.indexOf("?") != 0)return;
+	f_set_query = 1;
 	if (typeof(sessionStorage) != "undefined"){
 		sessionStorage.setItem("__QUERY__",src);
+		return;
 	}
 #ifdef JAVASCRIPT
 	__QUERY__ = src;
 #endif
 }
+
+#ifdef JAVASCRIPT
+clearQuery = function()
+#else
+void clearQuery()
+#endif
+{
+	f_set_query = 0;
+	if (typeof(sessionStorage) != "undefined"){
+		sessionStorage.removeItem("__QUERY__");
+		return;
+	}
+#ifdef JAVASCRIPT
+	__QUERY__ = null;
+#endif
+}
+
 
 #ifdef JAVASCRIPT
 jumpLocation = function(src)
@@ -156,9 +182,10 @@ void jumpLocation(var src)
 #endif
 {
 	if(src==null)return;
+	if(f_set_query==0)clearQuery();
 #ifdef JAVASCRIPT
 	if(typeof(__QUERY__)!="undefined")src+=__QUERY__;
-	location.href=src;
+	location.href = src;
 #else
 	println("jumpLocation()");
 	println(src);
@@ -245,6 +272,104 @@ var appendQueryValue(var key, var val)
 }
 
 //
+// query debug
+//
+
+#ifdef JAVASCRIPT
+getQueryLocationSearch = function()
+#else
+var getQueryLocationSearch()
+#endif
+{
+	var ret=null;
+#ifdef JAVASCRIPT
+	if (location.search){
+		ret = location.search;
+	}
+#endif
+	return ret;
+}
+
+#ifdef JAVASCRIPT
+getQuerySessionStorage = function()
+#else
+var getQuerySessionStorage()
+#endif
+{
+	var ret=null;
+	if (typeof(sessionStorage) != "undefined"){
+		ret = sessionStorage.getItem("__QUERY__");
+	}
+	return ret;
+}
+
+//
+// print,mail,open new window 
+//
+
+
+#ifdef JAVASCRIPT
+printPage = function()
+#else
+void printPage()
+#endif
+{
+	BEGIN_TRY();
+#ifdef JAVASCRIPT
+	print();
+#else
+	println("printPage()");
+#endif
+	END_TRY();
+}
+
+#ifdef JAVASCRIPT
+openPage = function(src)
+#else
+void openPage(var src)
+#endif
+{
+	// This function should be called from onClick events
+	if(f_set_query==0)clearQuery();
+	BEGIN_TRY();
+#ifdef JAVASCRIPT
+	window.open(src);
+#else
+	println("openPage()");
+	println(src);
+#endif
+	END_TRY();
+}
+
+#ifdef JAVASCRIPT
+mailTo = function(addr,subject,body)
+#else
+void mailTo(var addr, var subject,var body)
+#endif
+{
+	// This function should be called from onClick events
+	if (f_set_query == 0)clearQuery();
+	BEGIN_TRY();
+#ifdef JAVASCRIPT
+	location.href = 'mailto:' + addr + '?subject=' + subject + '&body=' + body;
+#else
+	var str;
+	println("mailTo()");
+	str = "address:";
+	str += addr;
+	println(str);
+	str = "subject:";
+	str += subject;
+	println(str);
+	str = "body:";
+	str += body;
+	println(str);
+#endif
+	END_TRY();
+}
+
+
+//
 // main
 //
 
@@ -252,31 +377,37 @@ var appendQueryValue(var key, var val)
 #ifndef JAVASCRIPT
 void main_main(){
 #endif
-	var ret, str;
+	var ret=null, str;
 
 	println("Hello JavaScript include test!");
 
-	strarray_test();
+	//str = "querySessionStorage ==> ";
+	//ret = getQuerySessionStorage();
+	//str += ret;
+	//println(str);
 
-	ret = createQueryValue("aaaa", "qq qq");
-	ret += appendQueryValue("ccc", ".kl;:@09-^^@:");
-	println(ret);
-	ret = getQueryValue("?aaa=f++++%35&bbb=&ccc", "aaa");
-	println(ret);
+	//str = "queryLocationSearch ==> ";
+	//ret = getQueryLocationSearch();
+	//str += ret;
+	//println(str);
 
-
-	println(myName());
-	str = "1:";
+	str = "query ==> ";
 	ret = getQuery();
 	str += ret;
 	println(str);
+
 	if (ret == null || ret == ""){
 		setQuery("?qqq=555");
 		jumpLocation("main.html");
 	}
-	println(test);
-	println("test end");
+	else{
+		//println("open");
+		//openPage("sub.html");
 
+		println("mail");
+		mailTo("yomei.otani@gmail.com","test","hogehoge");
+		println("test end");
+	}
 
 #ifndef JAVASCRIPT
 }

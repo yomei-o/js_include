@@ -2947,6 +2947,13 @@ std::string  sessionStorage::getItem(std::string key)
 	return ret;
 }
 
+void sessionStorage::removeItem(std::string key)
+{
+	std::string fname;
+	fname = "sessionstorage_" + key + ".txt";
+	remove(fname.c_str());
+}
+
 void localStorage::setItem(std::string key, std::string val)
 {
 	FILE* fp;
@@ -2956,6 +2963,13 @@ void localStorage::setItem(std::string key, std::string val)
 	if (fp == NULL)return;
 	fputs(val.c_str(), fp);
 	fclose(fp);
+}
+
+void localStorage::removeItem(std::string key)
+{
+	std::string fname;
+	fname = "localstorage_" + key + ".txt";
+	remove(fname.c_str());
 }
 
 std::string  localStorage::getItem(std::string key)

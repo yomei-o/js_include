@@ -286,12 +286,14 @@ class sessionStorage{
 public :
 	static std::string getItem(std::string key);
 	static void setItem(std::string key, std::string val);
+	static void removeItem(std::string key);
 };
 
 class localStorage{
 public:
 	static std::string getItem(std::string key);
 	static void setItem(std::string key, std::string val);
+	static void removeItem(std::string key);
 };
 
 class Math{
