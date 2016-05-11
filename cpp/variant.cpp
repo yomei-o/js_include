@@ -3308,6 +3308,94 @@ double Math::log10(var a)
 	ret = ::log10((double)a);
 	return ret;
 }
+
+//
+// iterator
+//
+
+
+#ifdef  I_USE_ITERATOR
+
+varIterator::varIterator()
+{
+	m_var = NULL;
+	m_index = 0;
+}
+
+varIterator::varIterator(var* myClass, int index)
+{
+	m_var = myClass;
+	m_index = index;
+}
+
+varIterator::varIterator(const varIterator& iterator)
+{
+	m_var = iterator.m_var;
+	m_index = iterator.m_index;
+}
+
+var varIterator::operator*()
+{
+	var dummy;
+	std::map<std::string, var*>::iterator ite;
+	std::string str;
+	int ct = 0;
+	for (ite = m_var->m_map.begin(); ite != m_var->m_map.end(); ite++)
+	{
+		if (ct == m_index){
+			str = ite->first;
+			dummy = str;
+			break;
+		}
+		ct++;
+	}
+	return dummy;
+}
+
+varIterator& varIterator::operator++()
+{
+	m_index++;
+	return *this;
+}
+
+varIterator varIterator::operator++(int)
+{
+	varIterator result = *this;
+	m_index++;
+	return result;
+}
+
+bool varIterator::operator!=(const varIterator& iterator)
+{
+	return this->m_var != iterator.m_var || this->m_index != iterator.m_index;
+}
+
+bool varIterator::operator==(const varIterator& iterator)
+{
+	return !(*this != iterator);
+}
+
+var::iterator var::begin()
+{
+	return varIterator(this, 0);
+}
+
+var::iterator var::end()
+{
+	int len=0;
+
+	//len = strlen(m_str);
+	if (this->type == VAR_TYPE_MAP){
+		len = m_map.size();
+	}
+	return varIterator(this, len);
+}
+
+
+#endif /* I_USE_ITERATOR */
+
+
+
 //
 //
 //

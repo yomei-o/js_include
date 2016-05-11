@@ -1,9 +1,16 @@
 #ifndef VARIENT_H_
 #define VARIENT_H_
 
+#define I_USE_ITERATOR
+
 #include <string>
 #include <algorithm>
 #include <map>
+#ifdef  I_USE_ITERATOR
+#include <iterator>
+#endif
+
+#define in :
 
 
 #define VAR_TYPE_NULL 0
@@ -31,8 +38,17 @@ public:
 	int m_nan;
 };
 
+
+class varIterator;
+
 class var{
+	friend varIterator;
 public:
+	typedef varIterator iterator;
+
+	var::iterator begin();
+	var::iterator end();
+
 	var();
 	var(int v);
 	var(bool v);
@@ -332,6 +348,39 @@ static sessionStorage sessionStorage;
 static localStorage localStorage;
 static NaN NaN;
 static Math Math;
+
+
+
+#ifdef  I_USE_ITERATOR
+
+class varIterator : public std::iterator<std::forward_iterator_tag, var>
+{
+	friend var;
+private:
+private:
+	varIterator();
+	varIterator(var* myClass, int index);
+
+public:
+	varIterator(const varIterator& iterator);
+
+public:
+	varIterator& operator++();
+	varIterator operator++(int);
+
+	var operator*();
+
+	bool operator==(const varIterator& iterator);
+	bool operator!=(const varIterator& iterator);
+
+private:
+	int m_index;
+	var* m_var;
+
+};
+#endif
+
+
 
 #ifdef  VARIENT_DEBUG_TEST
 void println(const char*);

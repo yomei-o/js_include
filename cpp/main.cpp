@@ -47,6 +47,15 @@ include("js_base64.js");
 #define END_TRY()
 #endif
 
+#ifdef JAVASCRIPT 
+#define _delete(a,b) delete a[b]
+#else
+#define _delete(a,b) a.delete_(b)
+#endif
+
+//
+//
+//
 
 #ifndef JAVASCRIPT 
 //#define __QUERY__ "?aaa=000"
@@ -347,7 +356,6 @@ mailTo = function(addr,subject,body)
 void mailTo(var addr, var subject,var body)
 #endif
 {
-	// This function should be called from onClick events
 	if (f_set_query == 0)clearQuery();
 	BEGIN_TRY();
 #ifdef JAVASCRIPT
@@ -381,6 +389,31 @@ void main_main(){
 
 	println("Hello JavaScript include test!");
 
+	ret = new Array();
+	ret[0] = 1;
+	ret[1] = 2;
+	for (var i in ret){
+		println(i);
+		println(ret[i]);
+		println("");
+	}
+
+	ret = new Array();
+	ret["hoge"] = "hogehoge";
+	ret["hage"] = "hagehage";
+	for (var i in ret){
+		println(i);
+		println(ret[i]);
+		println("");
+	}
+
+	_delete(ret,"hoge");
+	for (var i in ret){
+		println(i);
+		println(ret[i]);
+		println("");
+	}
+
 	//str = "querySessionStorage ==> ";
 	//ret = getQuerySessionStorage();
 	//str += ret;
@@ -401,12 +434,8 @@ void main_main(){
 		jumpLocation("main.html");
 	}
 	else{
-		//println("open");
-		//openPage("sub.html");
-
-		println("mail");
-		mailTo("yomei.otani@gmail.com","test","hogehoge");
-		println("test end");
+		println("open");
+		openPage("sub.html");
 	}
 
 #ifndef JAVASCRIPT
