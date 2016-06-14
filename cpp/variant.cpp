@@ -3212,6 +3212,15 @@ var& var::operator =(class NaN n)
 	return *this;
 }
 
+var operator+(const char* s, var& str)
+{
+	var ret;
+	ret = s;
+	ret += str;
+	return ret;
+}
+
+
 
 int Math::floor(var a)
 {
