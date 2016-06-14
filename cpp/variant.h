@@ -287,6 +287,9 @@ var typeof(double);
 var typeof(var&);
 var typeof(char*);
 
+
+var operator+(const char*, var& str);
+
 class String{
 public:
 	static std::string fromCharCode(int a);
