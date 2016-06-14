@@ -1,5 +1,5 @@
-//// JavaScript include library  Rev 0.04 ----BEGIN----
-if(typeof include=="undefined"){var t,q="__QUERY__";include_list={};include=function(s){if(s.indexOf(q)!=-1){
+//// JavaScript include library  Rev 0.05 ----BEGIN----
+if(typeof include=="undefined"){var t,q="__QUERY__";include_list={};include=function(s){if(typeof($)!="undefined" && s.indexOf("jquery-")==0)return;if(s.indexOf(q)!=-1){
 if(typeof sessionStorage!="undefined" && (t=sessionStorage.getItem(q)))s=s.replace(q,t);
 else s=s.replace(q,location.search);}
 var xhr=null;if(include_list[s])return;include_list[s]=1;if (window.XMLHttpRequest)xhr=new XMLHttpRequest();
@@ -11,6 +11,9 @@ include("jquery-1.11.3.js");
 include("json_sample.js");
 //include("json_sample.exe__QUERY__");
 include("js_base64.js");
+//
+//
+//
 //
 // Debufg print
 //
@@ -149,19 +152,24 @@ getQuerySessionStorage = function()
 //
 printPage = function()
 {
+ try{;
  print();
+ }catch(e){};
 }
 openPage = function(src)
 {
  // This function should be called from onClick events
  if(f_set_query==0)clearQuery();
+ try{;
  window.open(src);
+ }catch(e){};
 }
 mailTo = function(addr,subject,body)
 {
- // This function should be called from onClick events
  if (f_set_query == 0)clearQuery();
+ try{;
  location.href = 'mailto:' + addr + '?subject=' + subject + '&body=' + body;
+ }catch(e){};
 }
 //
 // main
@@ -185,11 +193,8 @@ mailTo = function(addr,subject,body)
   jumpLocation("main.html");
  }
  else{
-  //println("open");
-  //openPage("sub.html");
-  println("mail");
-  mailTo("yomei.otani@gmail.com","test","hogehoge");
-  println("test end");
+  println("open");
+  openPage("sub.html");
  }
 jQuery().ready(function()
 {
