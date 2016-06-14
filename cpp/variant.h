@@ -289,6 +289,8 @@ var typeof(char*);
 
 
 var operator+(const char*, var& str);
+var operator+(int, var str);
+var operator+(double, var str);
 
 class String{
 public:
