@@ -1,6 +1,6 @@
 #ifdef JAVASCRIPT
-//// JavaScript include library  Rev 0.04 ----BEGIN----
-if(typeof include=="undefined"){var t,q="__QUERY__";include_list={};include=function(s){if(s.indexOf(q)!=-1){
+//// JavaScript include library  Rev 0.05 ----BEGIN----
+if(typeof include=="undefined"){var t,q="__QUERY__";include_list={};include=function(s){if(typeof($)!="undefined" && s.indexOf("jquery-")==0)return;if(s.indexOf(q)!=-1){
 if(typeof sessionStorage!="undefined" && (t=sessionStorage.getItem(q)))s=s.replace(q,t);
 else s=s.replace(q,location.search);}
 var xhr=null;if(include_list[s])return;include_list[s]=1;if (window.XMLHttpRequest)xhr=new XMLHttpRequest();
@@ -388,7 +388,7 @@ void main_main(){
 	var ret=null, str;
 
 	println("Hello JavaScript include test!");
-
+#if 0
 	ret = new Array();
 	ret[0] = 1;
 	ret[1] = 2;
@@ -413,7 +413,7 @@ void main_main(){
 		println(ret[i]);
 		println("");
 	}
-
+#endif
 	//str = "querySessionStorage ==> ";
 	//ret = getQuerySessionStorage();
 	//str += ret;
