@@ -3220,6 +3220,21 @@ var operator+(const char* s, var& str)
 	return ret;
 }
 
+var operator+(int s, var str)
+{
+	var ret;
+	ret = s;
+	ret += str;
+	return ret;
+}
+
+var operator+(double s, var str)
+{
+	var ret;
+	ret = s;
+	ret += str;
+	return ret;
+}
 
 
 int Math::floor(var a)
