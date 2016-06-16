@@ -34,25 +34,9 @@ strlength = function(src)
 //
 // QUERY
 //
-var f_set_query = 0;
-getQuery = function()
-{
- var ret;
- ret= "";
- if (location.search){
-  ret = location.search;
-  return ret;
- }
- if (typeof(sessionStorage) != "undefined"){
-  ret = sessionStorage.getItem("__QUERY__");
-  if (ret!=null)return ret;
- }
- return ret;
-}
 setQuery = function(src)
 {
  if (src == null || src.indexOf("?") != 0)return;
- f_set_query = 1;
  if (typeof(sessionStorage) != "undefined"){
   sessionStorage.setItem("__QUERY__",src);
   return;
@@ -61,17 +45,40 @@ setQuery = function(src)
 }
 clearQuery = function()
 {
- f_set_query = 0;
  if (typeof(sessionStorage) != "undefined"){
   sessionStorage.removeItem("__QUERY__");
   return;
  }
  __QUERY__ = null;
 }
+var s_query = null;
+getQuery = function()
+{
+ var ret;
+ ret = "";
+ if (location.search){
+  ret = location.search;
+  return ret;
+ }
+ if (typeof(sessionStorage) != "undefined"){
+  if (s_query == null){
+   ret = sessionStorage.getItem("__QUERY__");
+   clearQuery();
+   s_query = ret;
+  }
+  else{
+   ret = s_query;
+  }
+  if (ret != null)return ret;
+ }
+ return ret;
+}
+//
+// location
+//
 jumpLocation = function(src)
 {
  if(src==null)return;
- if(f_set_query==0)clearQuery();
  if(typeof(__QUERY__)!="undefined")src+=__QUERY__;
  location.href = src;
 }
@@ -88,6 +95,9 @@ myName = function()
  if (idx != -1)ret = ret.substring(0,idx);
  return ret;
 }
+//
+// query value
+//
 getQueryValue = function(src,key)
 {
  var ret="";
@@ -159,14 +169,12 @@ printPage = function()
 openPage = function(src)
 {
  // This function should be called from onClick events
- if(f_set_query==0)clearQuery();
  try{;
  window.open(src);
  }catch(e){};
 }
 mailTo = function(addr,subject,body)
 {
- if (f_set_query == 0)clearQuery();
  try{;
  location.href = 'mailto:' + addr + '?subject=' + subject + '&body=' + body;
  }catch(e){};
@@ -176,14 +184,18 @@ mailTo = function(addr,subject,body)
 //
  var ret=null, str;
  println("Hello JavaScript include test!");
- //str = "querySessionStorage ==> ";
- //ret = getQuerySessionStorage();
- //str += ret;
- //println(str);
- //str = "queryLocationSearch ==> ";
- //ret = getQueryLocationSearch();
- //str += ret;
- //println(str);
+ str = "query sesion storage==> ";
+ ret = getQuerySessionStorage();
+ str += ret;
+ println(str);
+ str = "query ==> ";
+ ret = getQuery();
+ str += ret;
+ println(str);
+ str = "query sesion storage==> ";
+ ret = getQuerySessionStorage();
+ str += ret;
+ println(str);
  str = "query ==> ";
  ret = getQuery();
  str += ret;
@@ -191,10 +203,6 @@ mailTo = function(addr,subject,body)
  if (ret == null || ret == ""){
   setQuery("?qqq=555");
   jumpLocation("main.html");
- }
- else{
-  println("open");
-  openPage("sub.html");
  }
 jQuery().ready(function()
 {
