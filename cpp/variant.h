@@ -62,6 +62,8 @@ public:
 	var(var(*)(void));
 	var(void(*)(var a));
 	var(var(*)(var a));
+	var(void(*)(var a,var b));
+	var(var(*)(var a,var b));
 	var(class NaN n);
 
 	void clear();
@@ -90,10 +92,13 @@ public:
 	var& operator =(var(*)(void));
 	var& operator =(void(*)(var a));
 	var& operator =(var(*)(var a));
+	var& operator =(void(*)(var a,var b));
+	var& operator =(var(*)(var a,var b));
 	var& operator =(class NaN n);
 
 	var operator()();
 	var operator()(var a);
+	var operator()(var a,var b);
 
 	bool operator ==(int);
 	bool operator !=(int);
@@ -277,6 +282,8 @@ public:
 	void(*m_func2)(void);
 	var(*m_func3)(var a);
 	void(*m_func4)(var a);
+	var(*m_func5)(var a,var b);
+	void(*m_func6)(var a,var b);
 
 	int m_max_array;
 	bool m_is_array;

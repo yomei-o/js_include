@@ -98,6 +98,8 @@ void var::init()
 	m_func2 = NULL;
 	m_func3 = NULL;
 	m_func4 = NULL;
+	m_func5 = NULL;
+	m_func6 = NULL;
 }
 var::var()
 {
@@ -430,6 +432,8 @@ var& var::operator =(const var& val)
 		m_func2 = val.m_func2;
 		m_func3 = val.m_func3;
 		m_func4 = val.m_func4;
+		m_func5 = val.m_func5;
+		m_func6 = val.m_func6;
 		break;
 	case VAR_TYPE_NAN:
 		type = VAR_TYPE_NAN;
@@ -763,7 +767,8 @@ bool var::operator ==(const var& val)
 		return false;
 	case VAR_TYPE_FUNCTION:
 		if (val.type != VAR_TYPE_FUNCTION)return false;
-		if (m_func1 == val.m_func1 && m_func2 == val.m_func2 &&m_func3 == val.m_func3 &&m_func4 == val.m_func4)return true;
+		if (m_func1 == val.m_func1 && m_func2 == val.m_func2 &&m_func3 == val.m_func3 &&m_func4 == val.m_func4
+			&&m_func5 == val.m_func5 &&m_func6 == val.m_func6)return true;
 		return false;
 	case VAR_TYPE_MAP:
 		//no implement
@@ -800,7 +805,8 @@ bool var::operator !=(const var& val)
 		return true;
 	case VAR_TYPE_FUNCTION:
 		if (val.type != VAR_TYPE_FUNCTION)return true;
-		if (m_func1 == val.m_func1 && m_func2 == val.m_func2 &&m_func3 == val.m_func3 &&m_func4 == val.m_func4)return false;
+		if (m_func1 == val.m_func1 && m_func2 == val.m_func2 &&m_func3 == val.m_func3 &&m_func4 == val.m_func4
+			&&m_func5 == val.m_func5 &&m_func6 == val.m_func6)return false;
 		return true;
 	case VAR_TYPE_MAP:
 		//no implement
@@ -3092,6 +3098,8 @@ var& var::operator =(void (*f)(void))
 	this->m_func1 = NULL;
 	this->m_func3 = NULL;
 	this->m_func4 = NULL;
+	this->m_func5 = NULL;
+	this->m_func6 = NULL;
 	return *this;
 }
 
@@ -3103,6 +3111,8 @@ var& var::operator =(var(*f)(void))
 	this->m_func2 = NULL;
 	this->m_func3 = NULL;
 	this->m_func4 = NULL;
+	this->m_func5 = NULL;
+	this->m_func6 = NULL;
 	return *this;
 }
 
@@ -3114,6 +3124,8 @@ var& var::operator =(void(*f)(var a))
 	this->m_func1 = NULL;
 	this->m_func2 = NULL;
 	this->m_func3 = NULL;
+	this->m_func5 = NULL;
+	this->m_func6 = NULL;
 	return *this;
 }
 
@@ -3125,12 +3137,41 @@ var& var::operator =(var(*f)(var a))
 	this->m_func1 = NULL;
 	this->m_func2 = NULL;
 	this->m_func4 = NULL;
+	this->m_func5 = NULL;
+	this->m_func6 = NULL;
 	return *this;
 }
 
+var& var::operator =(void(*f)(var a,var b))
+{
+	clear();
+	this->type = VAR_TYPE_FUNCTION;
+	this->m_func6 = f;
+	this->m_func1 = NULL;
+	this->m_func2 = NULL;
+	this->m_func3 = NULL;
+	this->m_func4 = NULL;
+	this->m_func5 = NULL;
+	return *this;
+}
+
+var& var::operator =(var(*f)(var a,var b))
+{
+	clear();
+	this->type = VAR_TYPE_FUNCTION;
+	this->m_func5 = f;
+	this->m_func1 = NULL;
+	this->m_func2 = NULL;
+	this->m_func3 = NULL;
+	this->m_func4 = NULL;
+	this->m_func6 = NULL;
+	return *this;
+}
+
+
 var var::operator()()
 {
-	var ret,a;
+	var ret,a,b;
 	if (this->m_func2){
 		(this->m_func2)();
 	}else if (this->m_func1){
@@ -3139,13 +3180,19 @@ var var::operator()()
 		(this->m_func4)(a);
 	}else if (this->m_func3){
 		ret = (this->m_func3)(a);
+	}else if (this->m_func3){
+		ret = (this->m_func3)(a);
+	}else if (this->m_func6){
+		(this->m_func6)(a,b);
+	}else if (this->m_func5){
+		ret = (this->m_func5)(a,b);
 	}
 	return ret;
 }
 
 var var::operator()(var a)
 {
-	var ret;
+	var ret,b;
 	if (this->m_func2){
 		(this->m_func2)();
 	}else if (this->m_func1){
@@ -3154,6 +3201,34 @@ var var::operator()(var a)
 		(this->m_func4)(a);
 	}else if (this->m_func3){
 		ret = (this->m_func3)(a);
+	}else if (this->m_func6){
+		(this->m_func6)(a,b);
+	}else if (this->m_func5){
+		ret = (this->m_func5)(a,b);
+	}
+	return ret;
+}
+
+var var::operator()(var a,var b)
+{
+	var ret;
+	if (this->m_func2){
+		(this->m_func2)();
+	}
+	else if (this->m_func1){
+		ret = (this->m_func1)();
+	}
+	else if (this->m_func4){
+		(this->m_func4)(a);
+	}
+	else if (this->m_func3){
+		ret = (this->m_func3)(a);
+	}
+	else if (this->m_func6){
+		(this->m_func6)(a, b);
+	}
+	else if (this->m_func5){
+		ret = (this->m_func5)(a, b);
 	}
 	return ret;
 }
@@ -3167,6 +3242,8 @@ var::var(void (*f)())
 	this->m_func1 = NULL;
 	this->m_func3 = NULL;
 	this->m_func4 = NULL;
+	this->m_func5 = NULL;
+	this->m_func6 = NULL;
 }
 
 var::var(var(*f)())
@@ -3177,6 +3254,8 @@ var::var(var(*f)())
 	this->m_func2 = NULL;
 	this->m_func3 = NULL;
 	this->m_func4 = NULL;
+	this->m_func5 = NULL;
+	this->m_func6 = NULL;
 }
 
 var::var(void(*f)(var a))
@@ -3187,6 +3266,8 @@ var::var(void(*f)(var a))
 	this->m_func1 = NULL;
 	this->m_func2 = NULL;
 	this->m_func3 = NULL;
+	this->m_func5 = NULL;
+	this->m_func6 = NULL;
 }
 
 var::var(var(*f)(var a))
@@ -3197,6 +3278,32 @@ var::var(var(*f)(var a))
 	this->m_func1 = NULL;
 	this->m_func2 = NULL;
 	this->m_func4 = NULL;
+	this->m_func5 = NULL;
+	this->m_func6 = NULL;
+}
+
+var::var(void(*f)(var a,var b))
+{
+	init();
+	this->type = VAR_TYPE_FUNCTION;
+	this->m_func6 = f;
+	this->m_func1 = NULL;
+	this->m_func2 = NULL;
+	this->m_func3 = NULL;
+	this->m_func4 = NULL;
+	this->m_func5 = NULL;
+}
+
+var::var(var(*f)(var a,var b))
+{
+	init();
+	this->type = VAR_TYPE_FUNCTION;
+	this->m_func5 = f;
+	this->m_func1 = NULL;
+	this->m_func2 = NULL;
+	this->m_func3 = NULL;
+	this->m_func4 = NULL;
+	this->m_func6 = NULL;
 }
 
 var::var(class NaN n)
