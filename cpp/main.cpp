@@ -131,8 +131,14 @@ void setQuery(var src)
 {
 	if (src == null || src.indexOf("?") != 0)return;
 	if (typeof(sessionStorage) != "undefined"){
-		sessionStorage.setItem("__QUERY__",src);
-		return;
+#ifdef JAVASCRIPT
+		try{
+#endif
+			sessionStorage.setItem("__QUERY__",src);
+			return;
+#ifdef JAVASCRIPT
+		}catch (e){}
+#endif
 	}
 #ifdef JAVASCRIPT
 	__QUERY__ = src;
@@ -146,8 +152,14 @@ void clearQuery()
 #endif
 {
 	if (typeof(sessionStorage) != "undefined"){
-		sessionStorage.removeItem("__QUERY__");
-		return;
+#ifdef JAVASCRIPT
+		try{
+#endif
+			sessionStorage.removeItem("__QUERY__");
+			return;
+#ifdef JAVASCRIPT
+		}catch (e){}
+#endif
 	}
 #ifdef JAVASCRIPT
 	__QUERY__ = null;
@@ -387,6 +399,44 @@ void mailTo(var addr, var subject,var body)
 #endif
 	END_TRY();
 }
+
+#ifdef JAVASCRIPT
+jumpLocation2 = function(src)
+#else
+void jumpLocation2(var src)
+#endif
+{
+	if (src != myName()){
+		jumpLocation(src);
+		return;
+	}
+#ifdef JAVASCRIPT
+	var s, p, u, q;
+	var li = {};
+	s_query = null;
+	q = getQuery();
+	for (s in include_list){
+		li[s] = 1;
+	}
+	for (s in li){
+		p = s.indexOf("?");
+		if (p == -1)continue;
+		u = s.substr(0, p);
+		u += q;
+
+		delete include_list[s];
+		include(u);
+	}
+	try{
+		onJumpLocation2();
+	}
+	catch (e){}
+#else
+	println("jumpLocation2()");
+	println(src);
+#endif
+}
+
 
 
 //
