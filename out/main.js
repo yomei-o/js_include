@@ -38,16 +38,20 @@ setQuery = function(src)
 {
  if (src == null || src.indexOf("?") != 0)return;
  if (typeof(sessionStorage) != "undefined"){
-  sessionStorage.setItem("__QUERY__",src);
-  return;
+  try{
+   sessionStorage.setItem("__QUERY__",src);
+   return;
+  }catch (e){}
  }
  __QUERY__ = src;
 }
 clearQuery = function()
 {
  if (typeof(sessionStorage) != "undefined"){
-  sessionStorage.removeItem("__QUERY__");
-  return;
+  try{
+   sessionStorage.removeItem("__QUERY__");
+   return;
+  }catch (e){}
  }
  __QUERY__ = null;
 }
@@ -178,6 +182,32 @@ mailTo = function(addr,subject,body)
  try{;
  location.href = 'mailto:' + addr + '?subject=' + subject + '&body=' + body;
  }catch(e){};
+}
+jumpLocation2 = function(src)
+{
+ if (src != myName()){
+  jumpLocation(src);
+  return;
+ }
+ var s, p, u, q;
+ var li = {};
+ s_query = null;
+ q = getQuery();
+ for (s in include_list){
+  li[s] = 1;
+ }
+ for (s in li){
+  p = s.indexOf("?");
+  if (p == -1)continue;
+  u = s.substr(0, p);
+  u += q;
+  delete include_list[s];
+  include(u);
+ }
+ try{
+  onJumpLocation2();
+ }
+ catch (e){}
 }
 //
 // main
